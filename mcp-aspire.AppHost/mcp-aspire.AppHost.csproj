@@ -12,7 +12,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\mcp-aspire.ApiService\mcp-aspire.ApiService.csproj" />
-    <ProjectReference Include="..\mcp-aspire.Web\mcp-aspire.Web.csproj" />
   </ItemGroup>
 
   <ItemGroup>
