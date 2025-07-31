@@ -1,45 +1,52 @@
+using EverythingServer.Tools;
+using EverythingServer.Resources;
+using EverythingServer.Prompts;
+using OpenTelemetry.Resources;
+using OpenTelemetry.Trace;
+using OpenTelemetry.Metrics;
+using OpenTelemetry.Logs;
+using OpenTelemetry;
+using ModelContextProtocol.Protocol;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add service defaults & Aspire client integrations.
 builder.AddServiceDefaults();
 
-// Add services to the container.
 builder.Services.AddProblemDetails();
 
-// Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
-builder.Services.AddOpenApi();
+HashSet<string> subscriptions = [];
+var _minimumLoggingLevel = LoggingLevel.Debug;
 
+builder.Services
+    .AddMcpServer()
+    .WithHttpTransport()
+    .WithTools<AddTool>()
+    .WithTools<AnnotatedMessageTool>()
+    .WithTools<EchoTool>()
+    .WithTools<LongRunningTool>()
+    .WithTools<PrintEnvTool>()
+    .WithTools<SampleLlmTool>()
+    .WithTools<TinyImageTool>()
+    .WithPrompts<ComplexPromptType>()
+    .WithPrompts<SimplePromptType>()
+    .WithResources<SimpleResourceType>();
+
+ResourceBuilder resource = ResourceBuilder.CreateDefault().AddService("everything-server");
+builder.Services.AddOpenTelemetry()
+    .WithTracing(b => b.AddSource("*").AddHttpClientInstrumentation().SetResourceBuilder(resource))
+    .WithMetrics(b => b.AddMeter("*").AddHttpClientInstrumentation().SetResourceBuilder(resource))
+    .WithLogging(b => b.SetResourceBuilder(resource));
+    // .UseOtlpExporter();
+
+builder.Services.AddSingleton(subscriptions);
+
+builder.Services.AddSingleton<Func<LoggingLevel>>(_ => () => _minimumLoggingLevel);
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
 app.UseExceptionHandler();
 
-if (app.Environment.IsDevelopment())
-{
-    app.MapOpenApi();
-}
-
-string[] summaries = ["Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"];
-
-app.MapGet("/weatherforecast", () =>
-{
-    var forecast = Enumerable.Range(1, 5).Select(index =>
-        new WeatherForecast
-        (
-            DateOnly.FromDateTime(DateTime.Now.AddDays(index)),
-            Random.Shared.Next(-20, 55),
-            summaries[Random.Shared.Next(summaries.Length)]
-        ))
-        .ToArray();
-    return forecast;
-})
-.WithName("GetWeatherForecast");
-
 app.MapDefaultEndpoints();
 
 app.Run();
-
-record WeatherForecast(DateOnly Date, int TemperatureC, string? Summary)
-{
-    public int TemperatureF => 32 + (int)(TemperatureC / 0.5556);
-}
