@@ -7,7 +7,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "mcp-aspire.AppHost", "mcp-a
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "mcp-aspire.ServiceDefaults", "mcp-aspire.ServiceDefaults\mcp-aspire.ServiceDefaults.csproj", "{E57F959A-60D2-4A9B-A75E-909DFB34E738}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "mcp-aspire.ApiService", "mcp-aspire.ApiService\mcp-aspire.ApiService.csproj", "{43462251-A70D-435E-BDAC-0B6AECAA4A64}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "mcp-aspire.McpServer", "mcp-aspire.McpServer\mcp-aspire.McpServer.csproj", "{43462251-A70D-435E-BDAC-0B6AECAA4A64}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

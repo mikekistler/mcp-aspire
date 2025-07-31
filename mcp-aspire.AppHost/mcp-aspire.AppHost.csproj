@@ -11,7 +11,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\mcp-aspire.ApiService\mcp-aspire.ApiService.csproj" />
+    <ProjectReference Include="..\mcp-aspire.McpServer\mcp-aspire.McpServer.csproj" />
   </ItemGroup>
 
   <ItemGroup>
