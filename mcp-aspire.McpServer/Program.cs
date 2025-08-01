@@ -5,8 +5,8 @@ using OpenTelemetry.Resources;
 using OpenTelemetry.Trace;
 using OpenTelemetry.Metrics;
 using OpenTelemetry.Logs;
-using OpenTelemetry;
 using ModelContextProtocol.Protocol;
+using ModelContextProtocol.AspNetCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -32,6 +32,12 @@ builder.Services
     .WithPrompts<SimplePromptType>()
     .WithResources<SimpleResourceType>();
 
+// Configure session timeout
+builder.Services.Configure<HttpServerTransportOptions>(options =>
+{
+    options.IdleTimeout = Timeout.InfiniteTimeSpan; // Never timeout
+});
+
 ResourceBuilder resource = ResourceBuilder.CreateDefault().AddService("everything-server");
 builder.Services.AddOpenTelemetry()
     .WithTracing(b => b.AddSource("*").AddHttpClientInstrumentation().SetResourceBuilder(resource))
@@ -47,6 +53,10 @@ var app = builder.Build();
 // Configure the HTTP request pipeline.
 app.UseExceptionHandler();
 
+// app.UseHttpsRedirection();
+
 app.MapDefaultEndpoints();
+
+app.MapMcp();
 
 app.Run();
